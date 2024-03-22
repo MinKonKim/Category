@@ -15,7 +15,23 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "1234",
-  database: "help_table",
+  database: "board",
+});
+
+app.post("/add_help", (req, res) => {
+  sql =
+    "INSERT INTO help_table (`help_code`,`help_cate`,`help_contents`,`help_subject`) VALUES(?) ";
+  const values = [
+    req.body.help_code,
+    req.body.help_cate,
+    req.body.help_contents,
+    req.body.help_subject,
+  ];
+  db.query(sql, values, (err, result) => {
+    if (err)
+      return res.json({ message: "예상치 못한 일이 발생했습니다." + err });
+    return res.json({ success: "help_table에 추가 완료!" });
+  });
 });
 
 app.listen(port, () => {
