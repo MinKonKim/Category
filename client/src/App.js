@@ -1,9 +1,10 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import TableComponent from "./Admin/help_admin/TableComponent";
+import Admin from "./Admin/help_admin/index.jsx";
+import "./App.css";
 function App() {
-  return <TableComponent />;
+  return <Admin />;
 }
 
 export default App;

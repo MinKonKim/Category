@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+/* CKEditor CSS */
+.ck-editor__editable {
+  min-height: 30rem;
+}
