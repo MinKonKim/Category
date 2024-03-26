@@ -1,14 +1,12 @@
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
-const bodyParser = require("body-parser");
-const conn = require("./config/mysql.js");
+
 const app = express();
 
-//json 데이터 받기 위함.
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
+
+//json 데이터 받기 위함.
 
 // 포트 설정
 app.set("port", process.env.PORT || 4000);
@@ -19,7 +17,7 @@ const db = mysql.createConnection({
   port: "3306",
   database: "board",
 });
-// 데이터베이스에 연결시도
+// 데이터베이스에 연결확인
 db.connect((err) => {
   if (err) {
     console.log("데이터베이스 연결 실패" + err.stack);
@@ -29,10 +27,14 @@ db.connect((err) => {
   console.log("데이터베이스에 성공적으로 연결됨. 연결ID : " + db.threadId);
 });
 
+app.get("/", (req, res) => {
+  return res.json("From Backend Side");
+});
+
 // 전체 조회 요청
 app.get("/view", (req, res) => {
   var sql = "SELECT*FROM help_table";
-  conn.query(sql, function (err, result) {
+  db.query(sql, function (err, result) {
     if (err) console.log("query가 실행되지 않았습니다." + err);
     else res.send(result); // 결과 반환
   });
@@ -52,32 +54,31 @@ app.get("/view/:id", (req, res, next) => {
 
 // 삽입 요청
 app.post("/help-insert", async (req, res) => {
-  try {
-    const { help_code, help_up_code, help_content } = req.body;
-    const sql = `INSERT INTO help_table (help_code,help_up_code,help_level,level_sort,help_content,read_count, insert_datetime) VALUES (?,?,IFNULL((SELECT h.help_level FROM help_table h WHERE h.help_code = ?), 0) + 1, IFNULL((SELECT COUNT(*) FROM help_table h WHERE h.help_up_code = ?), 0) + 1,?,0,NOW())`;
+  const params = req.body.params;
+  let help_code = params.help_code;
+  let help_up_code = params.help_up_code;
+  let help_content = params.help_content;
+  let values = [
+    help_code,
+    help_up_code,
+    help_up_code,
+    help_up_code,
+    help_content,
+  ];
 
-    // 쿼리 실행
-    const [result] = await conn.execute(sql, [
-      help_code,
-      help_up_code,
-      help_up_code,
-      help_up_code,
-      help_content,
-    ]);
-
-    res.json({
-      success: true,
-      message: "성공적으로 추가되었습니다.",
-      insertId: result.insertId,
-    });
-  } catch (error) {
-    console.log("Insert error", err);
-    res
-      .status(500)
-      .json({ success: false, message: "서버 오류가 발생했습니다." });
-  }
+  const sql = `INSERT INTO help_table (help_code,help_up_code,help_level,level_sort,help_content,read_count, insert_datetime) VALUES (?,?,IFNULL((SELECT h.help_level FROM help_table h WHERE h.help_code = ?), 0) + 1, IFNULL((SELECT COUNT(*) FROM help_table h WHERE h.help_up_code = ?), 0) + 1,?,0,NOW())`;
+  // 쿼리 실행
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Server Error");
+    } else {
+      res.status(201).send("Successfully Add");
+    }
+  });
 });
 
+//#region 아직 미개발
 // 수정 요청
 app.post("/help-update", (req, res) => {
   const id = req.body.help_code;
@@ -106,7 +107,9 @@ app.post("/help-update", (req, res) => {
 // app.post("/help-delete",(req,res)=>{
 //   const id =req.body;
 // })
+//#endregion
 
+//서버 시작
 app.listen(app.get("port"), () => {
   console.log(`running on port : ${app.get("port")} `);
 });
