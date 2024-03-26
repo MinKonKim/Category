@@ -2,15 +2,6 @@ import React, { useState } from "react";
 import { Table, Button, Form } from "react-bootstrap";
 
 function TableComponent() {
-  const [rows, setRows] = useState([]);
-  const [selectedRow, setselectedRow] = useState(null);
-
-  const handleDeleteRow = () => {
-    //선택된 행을 삭제합니다.
-    setRows(rows.filter((row) => row.id !== selectedRow));
-    setselectedRow(null); //선택행 초기화
-  };
-
   return (
     <div>
       <Table border hover>
@@ -29,7 +20,7 @@ function TableComponent() {
           <tr>
             <td>#</td>
             <td>
-              <input type="text" />
+              <input type="text" placeholder="aa" />
             </td>
             <td>
               <input type="text" />

@@ -1,8 +1,26 @@
 import React, { useState } from "react";
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import TextEditor from "./../../common/TextEditor";
+import { submitHelpForm } from "./../../model/HelpFormModel";
 function InputModal({ up_code, Button_Name }) {
   const [show, setShow] = useState(false);
+  const [formData, setFormData] = useState({
+    help_code: "",
+    help_up_code: "",
+    help_content: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    console.log("저장버튼 누름");
+    submitHelpForm(formData);
+  };
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -12,7 +30,7 @@ function InputModal({ up_code, Button_Name }) {
       <Button onClick={handleShow}>{Button_Name}</Button>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>생성</Modal.Title>
+          <Modal.Title>도움말 정보</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -23,12 +41,22 @@ function InputModal({ up_code, Button_Name }) {
                   controlId="helpForm.HelpCodeInput"
                 >
                   <Col xs={12} md={8}>
-                    <Form.Label className="col-sm-4 col-form-label p-3">
+                    <Form.Label
+                      id="help_code"
+                      name="help_code"
+                      className="col-sm-4 col-form-label p-3"
+                    >
                       메뉴코드 (필수)
                     </Form.Label>
                   </Col>
                   <Col xs={6} md={4}>
-                    <Form.Control as="input" autoFocus />
+                    <Form.Control
+                      as="input"
+                      name="help_code"
+                      value={formData.help_code}
+                      onChange={handleChange}
+                      autoFocus
+                    />
                   </Col>
                 </Form.Group>
               </Row>
@@ -40,7 +68,20 @@ function InputModal({ up_code, Button_Name }) {
                     </Form.Label>
                   </Col>
                   <Col xs={6} md={4}>
-                    <p>{up_code}</p>
+                    <p>
+                      {
+                        (up_code =
+                          up_code !== null ? (
+                            up_code
+                          ) : (
+                            <Form.Control
+                              name="help_up_code"
+                              value={formData.help_up_code}
+                              onChange={handleChange}
+                            />
+                          ))
+                      }
+                    </p>
                   </Col>
                 </Form.Group>
               </Row>
@@ -77,7 +118,12 @@ function InputModal({ up_code, Button_Name }) {
                     </Form.Label>
                   </Col>
                   <Col xs={6} md={4}>
-                    <Form.Control className="col-sm-10" as="input" />
+                    <Form.Control
+                      as="input"
+                      className="col-sm-10"
+                      value={formData.help_content}
+                      onChange={handleChange}
+                    />
                   </Col>
                 </Form.Group>
               </Row>
@@ -124,7 +170,7 @@ function InputModal({ up_code, Button_Name }) {
           <Button variant="secondary" onClick={handleClose}>
             닫기
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={handleSubmit}>
             저장
           </Button>
         </Modal.Footer>
