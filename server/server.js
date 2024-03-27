@@ -1,11 +1,13 @@
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
-
+const path = require("path");
+const bodyPaser = require("body-parser");
 const app = express();
 
 app.use(cors());
-
+app.use(bodyPaser.urlencoded({ extended: false }));
+app.use(bodyPaser.json());
 //json 데이터 받기 위함.
 
 // 포트 설정
@@ -53,20 +55,28 @@ app.get("/view/:id", (req, res, next) => {
 });
 
 // 삽입 요청
-app.post("/help-insert", async (req, res) => {
-  const params = req.body.params;
-  let help_code = params.help_code;
-  let help_up_code = params.help_up_code;
-  let help_content = params.help_content;
+app.post("/help-insert", (req, res) => {
+  const body = req.body;
+  console.log(body);
+  let help_code = body.help_code;
+  let help_up_code = body.help_up_code;
+  let help_content = body.help_content;
+  let link_address = body.link_address;
+  let help_subject = body.help_subject;
   let values = [
     help_code,
-    help_up_code,
+    help_subject,
+    link_address,
     help_up_code,
     help_up_code,
     help_content,
   ];
+  console.log("Values : " + values);
 
-  const sql = `INSERT INTO help_table (help_code,help_up_code,help_level,level_sort,help_content,read_count, insert_datetime) VALUES (?,?,IFNULL((SELECT h.help_level FROM help_table h WHERE h.help_code = ?), 0) + 1, IFNULL((SELECT COUNT(*) FROM help_table h WHERE h.help_up_code = ?), 0) + 1,?,0,NOW())`;
+  const sql = `INSERT INTO help_table (help_code,help_subject,link_address,help_up_code,help_level,level_sort,help_content,read_count, insert_datetime)
+   VALUES (?,?,?,NULL,
+    IFNULL((SELECT h.help_level FROM help_table h WHERE h.help_code = ?), 0) + 1,
+    IFNULL((SELECT COUNT(*) FROM help_table h WHERE h.help_up_code = ?), 0) + 1,?,0,NOW())`;
   // 쿼리 실행
   db.query(sql, values, (err, result) => {
     if (err) {

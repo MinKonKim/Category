@@ -4,7 +4,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Admin from "./Admin/help_admin/index.jsx";
 import "./App.css";
 function App() {
-  return <Admin />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Admin />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

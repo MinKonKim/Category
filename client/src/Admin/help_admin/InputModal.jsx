@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import TextEditor from "./../../common/TextEditor";
 import { submitHelpForm } from "./../../model/HelpFormModel";
+import { useNavigate } from "react-router-dom";
 function InputModal({ up_code, Button_Name }) {
+  let navigate = useNavigate();
+
   const [show, setShow] = useState(false);
   const [formData, setFormData] = useState({
     help_code: "",
     help_up_code: "",
     help_content: "",
+    help_subject: "",
+    link_address: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,8 +23,8 @@ function InputModal({ up_code, Button_Name }) {
   };
 
   const handleSubmit = async (e) => {
-    console.log("저장버튼 누름");
     submitHelpForm(formData);
+    navigate("/");
   };
 
   const handleClose = () => setShow(false);
@@ -68,20 +73,19 @@ function InputModal({ up_code, Button_Name }) {
                     </Form.Label>
                   </Col>
                   <Col xs={6} md={4}>
-                    <p>
-                      {
-                        (up_code =
-                          up_code !== null ? (
-                            up_code
-                          ) : (
-                            <Form.Control
-                              name="help_up_code"
-                              value={formData.help_up_code}
-                              onChange={handleChange}
-                            />
-                          ))
-                      }
-                    </p>
+                    {
+                      (up_code =
+                        up_code === "" ? (
+                          <Form.Control
+                            type="text"
+                            name="help_up_code"
+                            value={formData.help_up_code}
+                            onChange={handleChange}
+                          />
+                        ) : (
+                          up_code
+                        ))
+                    }
                   </Col>
                 </Form.Group>
               </Row>
@@ -93,7 +97,13 @@ function InputModal({ up_code, Button_Name }) {
                     </Form.Label>
                   </Col>
                   <Col xs={6} md={4}>
-                    <Form.Control as="input" className="col-sm-10" />
+                    <Form.Control
+                      as="input"
+                      name="help_subject"
+                      className="col-sm-10"
+                      value={formData.help_subject}
+                      onChange={handleChange}
+                    />
                   </Col>
                 </Form.Group>
               </Row>
@@ -119,9 +129,10 @@ function InputModal({ up_code, Button_Name }) {
                   </Col>
                   <Col xs={6} md={4}>
                     <Form.Control
-                      as="input"
+                      type="text"
                       className="col-sm-10"
-                      value={formData.help_content}
+                      name="link_address"
+                      value={formData.link_address}
                       onChange={handleChange}
                     />
                   </Col>
@@ -161,7 +172,11 @@ function InputModal({ up_code, Button_Name }) {
                 </Form.Group>
               </Row>
               <div>
-                <TextEditor />
+                <TextEditor
+                  name="help_content"
+                  value={formData.help_content}
+                  onChange={(e) => handleChange}
+                />
               </div>
             </Container>
           </Form>
