@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 });
 
 // 전체 조회 요청
-app.get("/view", (req, res) => {
+app.get("/tabledata", (req, res) => {
   var sql = "SELECT*FROM help_table";
   db.query(sql, function (err, result) {
     if (err) console.log("query가 실행되지 않았습니다." + err);

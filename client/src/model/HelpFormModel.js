@@ -1,5 +1,5 @@
 // HelpFormModel.js
-import { addHelp } from "../api/boardService";
+import { addHelp, selectAll } from "../api/boardService";
 export async function submitHelpForm(formData) {
   try {
     const result = await addHelp(formData);
